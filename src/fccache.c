@@ -1674,6 +1674,8 @@ FcDirCacheLock (const FcChar8 *dir,
 #if defined(_WIN32)
 	    if (_locking (fd, _LK_LOCK, 1) == -1)
 		goto bail;
+#elif defined(__wasi__)
+		goto bail;
 #else
 	    struct flock fl;
 
@@ -1703,6 +1705,8 @@ FcDirCacheUnlock (int fd)
     if (fd != -1) {
 #if defined(_WIN32)
 	_locking (fd, _LK_UNLCK, 1);
+#elif defined(__wasi__)
+	// Do nothing
 #else
 	struct flock fl;
 
