@@ -109,7 +109,7 @@ FcAtomicLock (FcAtomic *atomic)
     int         ret;
     struct stat lck_stat;
 
-#ifdef HAVE_LINK
+#if defined(HAVE_LINK) && !defined(__wasi__)
     int    fd = -1;
     FILE  *f = 0;
     FcBool no_link = FcFalse;
@@ -157,7 +157,7 @@ FcAtomicLock (FcAtomic *atomic)
 	if (FcStat (atomic->lck, &lck_stat) >= 0) {
 	    time_t now = time (0);
 	    if ((long int)(now - lck_stat.st_mtime) > 10 * 60) {
-#ifdef HAVE_LINK
+#if defined(HAVE_LINK) && !defined(__wasi__)
 		if (no_link) {
 		    if (rmdir ((char *)atomic->lck) == 0)
 			return FcAtomicLock (atomic);
@@ -209,7 +209,7 @@ FcAtomicDeleteNew (FcAtomic *atomic)
 void
 FcAtomicUnlock (FcAtomic *atomic)
 {
-#ifdef HAVE_LINK
+#if defined(HAVE_LINK) && !defined(__wasi__)
     if (unlink ((char *)atomic->lck) == -1)
 	rmdir ((char *)atomic->lck);
 #else
